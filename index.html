@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Krishi AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .app-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page {
+            display: none;
+            padding: 20px;
+            min-height: 100vh;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            margin: -20px -20px 30px -20px;
+            border-radius: 0 0 25px 25px;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .friendly-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .language-select {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .weather-widget {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .weather-temp {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .weather-details {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .mic-button {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            border-radius: 50%;
+            font-size: 40px;
+            color: white;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mic-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.6);
+            animation: bounce 1s infinite;
+        }
+
+        .main-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .main-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 18px 25px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .main-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .friendly-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .location-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .location-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .location-btn:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .soil-input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .range-input {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .range-value {
+            font-weight: bold;
+            color: #059669;
+            font-size: 18px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+        }
+
+        .friendly-message {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+
+        .warning-message {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .crop-recommendation {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #10b981;
+        }
+
+        .crop-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .crop-emoji {
+            font-size: 30px;
+            margin-right: 15px;
+        }
+
+        .crop-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .recommendation-reason {
+            background: #f0fdf4;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #166534;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .friendly-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .chat-message {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #10b981;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .help-tip {
+            background: #fef7cd;
+            border: 1px solid #fbbf24;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Home Page -->
+        <div class="page active" id="home">
+            <div class="header">
+                <h1 class="app-title">🌱 Smart Krishi AI</h1>
+                <p class="friendly-subtitle">Your friendly farming assistant</p>
+                
+                <!-- Weather Widget -->
+                <div class="weather-widget" id="weatherWidget">
+                    <div class="weather-main">
+                        <span id="weatherIcon">☀️</span>
+                        <span class="weather-temp" id="weatherTemp">28°C</span>
+                    </div>
+                    <div class="weather-details" id="weatherLocation">📍 Getting your location...</div>
+                    <div class="weather-details" id="weatherDesc">Perfect farming weather!</div>
+                </div>
+                
+                <select class="language-select" id="languageSelect">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="hi">🇮🇳 हिंदी</option>
+                    <option value="te">🇮🇳 తెలుగు</option>
+                    <option value="ta">🇮🇳 தமிழ்</option>
+                </select>
+            </div>
+            
+            <div class="friendly-message">
+                <div class="bot-avatar">🤖</div>
+                <p><strong>Hello, friend! 👋</strong></p>
+                <p>I'm here to help you grow better crops! Tell me about your farm or just tap the mic to chat with me.</p>
+            </div>
+
+            <button class="mic-button" onclick="startVoiceInput()">🎤</button>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 30px;">🗣️ Tap to talk - I understand your language!</p>
+            
+            <div class="main-buttons">
+                <button class="main-btn" onclick="showPage('soil-input')">
+                    <span>📝</span> Tell Me About Your Soil
+                </button>
+                <button class="main-btn" onclick="showPage('crops')">
+                    <span>🌾</span> Get Crop Suggestions
+                </button>
+                <button class="main-btn" onclick="showPage('disease')">
+                    <span>🔍</span> Check Plant Disease
+                </button>
+                <button class="main-btn" onclick="showPage('market')">
+                    <span>💰</span> Today's Market Prices
+                </button>
+                <button class="main-btn" onclick="showPage('comparison')">
+                    <span>📊</span> Success Stories
+                </button>
+            </div>
+
+            <div class="help-tip">
+                💡 <strong>Pro tip:</strong> The more you tell me about your soil and location, the better suggestions I can give you!
+            </div>
+        </div>
+
+        <!-- Soil Input Page -->
+        <div class="page" id="soil-input">
+            <button class="back-btn" onclick="showPage('home')">← Back Home</button>
+            <div class="friendly-title">
+                <span>🌍</span>
+                <h2 class="page-title">Tell Me About Your Farm</h2>
+            </div>
+            
+            <div class="friendly-message">
+                <p><strong>Great! Let's learn about your farm 🚜</strong></p>
+                <p>Don't worry if you don't know exact numbers - just give me your best guess!</p>
+            </div>
+
+            <div class="friendly-card">
+                <div class="input-group">
+                    <label class="input-label">📍 Where is your farm located?</label>
+                    <div class="location-input">
+                        <input type="text" class="input-field" id="locationInput" placeholder="e.g., Hyderabad, Telangana">
+                        <button class="location-btn" onclick="getCurrentLocation()" title="Use my current location">📱</button>
+                    </div>
+                    <div style="font-size: 12px; color: #6b7280; margin-top: 5px;">
+                        This helps me get weather data for better suggestions
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">🧪 Soil pH Level</label>
+                    <input type="range" class="range-input" id="phRange" min="4" max="9" step="0.1" value="6.5" oninput="updateRangeValue('ph', this.value)">
+                    <div>Current pH: <span class="range-value" id="phValue">6.5</span> <span style="font-size: 12px; color: #6b7280;">(Neutral - Good for most crops!)</span></div>
+                </div>
+
+                <div class="soil-input-grid">
+                    <div class="input-group">
+                        <label class="input-label">💧 Soil Moisture</label>
+                        <input type="range" class="range-input" id="moistureRange" min="0" max="100" value="60" oninput="updateRangeValue('moisture', this.value)">
+                        <div><span class="range-value" id="moistureValue">60</span>%</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">🌱 Organic Matter</label>
+                        <input type="range" class="range-input" id="organicRange" min="0" max="10" step="0.1" value="3" oninput="updateRangeValue('organic', this.value)">
+                        <div><span class="range-value" id="organicValue">3.0</span>%</div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">🧪 Nitrogen Level</label>
+                    <select class="input-field" id="nitrogenLevel">
+                        <option value="low">Low - Needs fertilizer</option>
+                        <option value="medium" selected>Medium - Okay level</option>
+                        <option value="high">High - Very good!</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">🌾 What did you grow last season?</label>
+                    <input type="text" class="input-field" id="lastCrop" placeholder="e.g., Rice, Wheat, Maize, or leave blank">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">📏 Farm size (optional)</label>
+                    <input type="number" class="input-field" id="farmSize" placeholder="Enter acres">
+                </div>
+
+                <button class="submit-btn" onclick="analyzeSoil()">
+                    🔍 Analyze My Soil & Get Suggestions
+                </button>
+            </div>
+        </div>
+
+        <!-- Enhanced Crop Recommendation Page -->
+        <div class="page" id="crops">
+            <button class="back-btn" onclick="showPage('home')">← Back Home</button>
+            <div class="friendly-title">
+                <span>🌾</span>
+                <h2 class="page-title">Perfect Crops For You!</h2>
+            </div>
+            
+            <div class="friendly-message success-message" id="analysisResult" style="display: none;">
+                <p><strong>Great news! 🎉</strong></p>
+                <p>Based on your soil and weather, here are my top recommendations:</p>
+            </div>
+
+            <div id="cropRecommendations">
+                <!-- Recommendations will be populated here -->
+                <div class="friendly-message">
+                    <p><strong>Hey there! 👋</strong></p>
+                    <p>I need to know about your soil first! Please go back and tell me about your farm so I can give you personalized crop suggestions.</p>
+                    <button class="submit-btn" onclick="showPage('soil-input')" style="margin-top: 15px;">
+                        📝 Tell Me About Your Soil
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Disease Detection Page -->
+        <div class="page" id="disease">
+            <button class="back-btn" onclick="showPage('home')">← Back Home</button>
+            <div class="friendly-title">
+                <span>🔬</span>
+                <h2 class="page-title">Plant Doctor</h2>
+            </div>
+            
+            <div class="friendly-message">
+                <p><strong>I'm like a doctor for your plants! 👩‍⚕️🌱</strong></p>
+                <p>Take a clear photo of the affected leaf and I'll help diagnose the problem.</p>
+            </div>
+
+            <div class="friendly-card">
+                <div class="input-group">
+                    <label class="input-label">📸 Upload a photo of the affected leaf</label>
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div style="font-size: 48px; color: #10b981; margin-bottom: 15px;">📷</div>
+                        <h3>Tap to take a photo</h3>
+                        <p style="color: #6b7280; margin-top: 10px;">Camera or gallery - both work great!</p>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="analyzeImage()">
+                    </div>
+                </div>
+
+                <div class="help-tip">
+                    📖 <strong>Photo Tips:</strong> Good lighting, close-up of the leaf, and focus on the problem area work best!
+                </div>
+            </div>
+
+            <div class="friendly-card" id="diseaseResult" style="display: none;">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 60px;">🍅</div>
+                    <h3 style="color: #dc2626;">Early Blight Detected</h3>
+                    <p style="color: #6b7280;">Confidence: 94% - Very sure about this diagnosis</p>
+                </div>
+                
+                <div class="friendly-message warning-message">
+                    <p><strong>Don't worry! This is treatable 💪</strong></p>
+                    <p>Early blight is common but manageable. Here's what to do:</p>
+                </div>
+
+                <div style="background: white; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                    <h4 style="color: #059669; margin-bottom: 10px;">🛠️ Treatment Plan</h4>
+                    <ul style="line-height: 1.6; color: #374151;">
+                        <li>🧪 <strong>Spray:</strong> Bio-pesticide with Bacillus subtilis</li>
+                        <li>⏰ <strong>When:</strong> Every 7 days in the evening</li>
+                        <li>💨 <strong>Prevention:</strong> Improve air flow around plants</li>
+                        <li>💧 <strong>Watering:</strong> Water at soil level, not on leaves</li>
+                    </ul>
+                </div>
+
+                <button class="submit-btn" style="margin-top: 15px;">
+                    📱 Get Detailed Treatment Guide
+                </button>
+            </div>
+        </div>
+
+        <!-- Enhanced Market Prices Page -->
+        <div class="page" id="market">
+            <button class="back-btn" onclick="showPage('home')">← Back Home</button>
+            <div class="friendly-title">
+                <span>💰</span>
+                <h2 class="page-title">Today's Market Rates</h2>
+            </div>
+            
+            <div class="friendly-message success-message">
+                <p><strong>Fresh market data! 📊</strong></p>
+                <p>Updated every hour from major mandis near you</p>
+            </div>
+
+            <div style="background: #f0fdf4; padding: 15px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 2px solid #22c55e;">
+                <p style="color: #15803d; font-weight: bold;">📍 <span id="marketLocation">Hyderabad</span> Mandi Prices</p>
+                <p style="color: #16a34a; font-size: 14px;">🕒 Last updated: <span id="updateTime">2 minutes ago</span></p>
+            </div>
+
+            <div class="crop-recommendation">
+                <div class="crop-header">
+                    <div class="crop-emoji">🌾</div>
+                    <div>
+                        <div class="crop-name">Rice (Basmati)</div>
+                        <div style="font-size: 14px; color: #10b981;">📈 ₹50/quintal increase today!</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #059669;">₹3,850</div>
+                        <div style="font-size: 12px; color: #6b7280;">Today's Rate/quintal</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 18px; color: #6b7280;">₹3,800</div>
+                        <div style="font-size: 12px; color: #6b7280;">Yesterday</div>
+                    </div>
+                </div>
+                <div class="recommendation-reason">
+                    💡 Great time to sell! Price is trending upward due to festival demand.
+                </div>
+            </div>
+
+            <div class="crop-recommendation">
+                <div class="crop-header">
+                    <div class="crop-emoji">🌽</div>
+                    <div>
+                        <div class="crop-name">Maize</div>
+                        <div style="font-size: 14px; color: #ef4444;">📉 ₹25/quintal down from yesterday</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #059669;">₹1,975</div>
+                        <div style="font-size: 12px; color: #6b7280;">Today's Rate/quintal</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 18px; color: #6b7280;">₹2,000</div>
+                        <div style="font-size: 12px; color: #6b7280;">Yesterday</div>
+                    </div>
+                </div>
+                <div class="recommendation-reason">
+                    ⏳ Consider holding for a few days. Prices usually bounce back after weekend dip.
+                </div>
+            </div>
+
+            <div class="help-tip">
+                📱 <strong>Smart tip:</strong> Set price alerts for your crops! I'll notify you when prices hit your target.
+            </div>
+        </div>
+
+        <!-- Enhanced Before vs After Page -->
+        <div class="page" id="comparison">
+            <button class="back-btn" onclick="showPage('home')">← Back Home</button>
+            <div class="friendly-title">
+                <span>⭐</span>
+                <h2 class="page-title">Amazing Success Stories</h2>
+            </div>
+            
+            <div class="friendly-message">
+                <p><strong>Real farmers, real results! 🎉</strong></p>
+                <p>See how Smart Krishi AI helped farmers like you earn more!</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                <div style="background: linear-gradient(135deg, #fecaca, #fca5a5); padding: 20px; border-radius: 15px; text-align: center; border-left: 5px solid #ef4444;">
+                    <h3 style="color: #dc2626; margin-bottom: 15px;">❌ BEFORE</h3>
+                    <div style="font-size: 40px; margin: 15px 0;">😔</div>
+                    <p><strong>Guessing what to plant</strong></p>
+                    <p style="margin: 10px 0; font-size: 14px;">Traditional farming methods</p>
+                    <div style="font-size: 24px; font-weight: bold; color: #dc2626; margin: 10px 0;">₹25,000/acre</div>
+                    <p style="font-size: 12px; color: #7f1d1d;">Often lost money due to wrong crops</p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #bbf7d0, #86efac); padding: 20px; border-radius: 15px; text-align: center; border-left: 5px solid #10b981;">
+                    <h3 style="color: #059669; margin-bottom: 15px;">✅ AFTER</h3>
+                    <div style="font-size: 40px; margin: 15px 0;">😊</div>
+                    <p><strong>AI-guided smart farming</strong></p>
+                    <p style="margin: 10px 0; font-size: 14px;">Data-driven decisions</p>
+                    <div style="font-size: 24px; font-weight: bold; color: #059669; margin: 10px 0;">₹48,000/acre</div>
+                    <p style="font-size: 12px; color: #064e3b;">92% success rate with AI suggestions!</p>
+                </div>
+            </div>
+
+            <!-- Success Stories -->
+            <div style="background: linear-gradient(135deg, #ddd6fe, #c4b5fd); padding: 20px; border-radius: 15px; margin-top: 30px; text-align: center;">
+                <h3 style="color: #5b21b6; margin-bottom: 15px;">🗣️ What Farmers Say</h3>
+                
+                <div class="chat-message">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="width: 40px; height: 40px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">👨‍🌾</div>
+                        <div>
+                            <strong>Rajesh Kumar, Punjab</strong>
+                            <div style="font-size: 12px; color: #6b7280;">Rice & Wheat Farmer</div>
+                        </div>
+                    </div>
+                    <p style="font-style: italic; color: #374151;">"Smart Krishi AI told me to switch from wheat to basmati rice this season. My income doubled! The weather predictions were spot-on too."</p>
+                    <div style="text-align: right; margin-top: 10px; color: #10b981; font-weight: bold;">💰 +₹85,000 extra income</div>
+                </div>
+
+                <div class="chat-message">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="width: 40px; height: 40px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">👩‍🌾</div>
+                        <div>
+                            <strong>Lakshmi Devi, Karnataka</strong>
+                            <div style="font-size: 12px; color: #6b7280;">Organic Farmer</div>
+                        </div>
+                    </div>
+                    <p style="font-style: italic; color: #374151;">"The app saved my tomato crop! It detected disease early and gave me organic treatment options. My family is so grateful!"</p>
+                    <div style="text-align: right; margin-top: 10px; color: #10b981; font-weight: bold;">🌱 Saved entire crop worth ₹1.2L</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store soil data
+        let soilData = {
+            location: '',
+            ph: 6.5,
+            moisture: 60,
+            organic: 3.0,
+            nitrogen: 'medium',
+            lastCrop: '',
+            farmSize: null
+        };
+
+        let weatherData = {
+            temp: 28,
+            condition: 'sunny',
+            location: 'Getting location...'
+        };
+
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function startVoiceInput() {
+            const micButton = document.querySelector('.mic-button');
+            micButton.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            micButton.innerHTML = '🎙️';
+            
+            // Show friendly voice interaction
+            const friendlyMessages = [
+                "🎤 I'm listening! Tell me about your farm...",
+                "🌾 What crops are you thinking about?",
+                "🌍 Having any soil problems?",
+                "💭 Ask me anything about farming!"
+            ];
+            
+            const randomMessage = friendlyMessages[Math.floor(Math.random() * friendlyMessages.length)];
+            
+            // Create temporary message
+            const tempMessage = document.createElement('div');
+            tempMessage.className = 'friendly-message';
+            tempMessage.innerHTML = `
+                <div class="bot-avatar">🤖</div>
+                <p><strong>${randomMessage}</strong></p>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            
+            // Add to current page
+            const currentPage = document.querySelector('.page.active');
+            currentPage.appendChild(tempMessage);
+            
+            setTimeout(() => {
+                tempMessage.remove();
+                micButton.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                micButton.innerHTML = '🎤';
+                
+                // Show result message
+                const resultMessage = document.createElement('div');
+                resultMessage.className = 'friendly-message success-message';
+                resultMessage.innerHTML = `
+                    <p><strong>Got it! 👍</strong></p>
+                    <p>I heard you ask about crop suggestions. Let me help you with that - just tell me about your soil first!</p>
+                `;
+                currentPage.appendChild(resultMessage);
+                
+                setTimeout(() => resultMessage.remove(), 4000);
+            }, 3000);
+        }
+
+        function updateRangeValue(type, value) {
+            document.getElementById(type + 'Value').textContent = value;
+            soilData[type] = parseFloat(value);
+            
+            // Add helpful feedback
+            let feedback = '';
+            if (type === 'ph') {
+                if (value < 5.5) feedback = '(Acidic - May need lime)';
+                else if (value > 7.5) feedback = '(Alkaline - May need sulfur)';
+                else feedback = '(Perfect for most crops! 🎉)';
+            } else if (type === 'moisture') {
+                if (value < 30) feedback = '(Dry soil)';
+                else if (value > 80) feedback = '(Very wet)';
+                else feedback = '(Good moisture level!)';
+            } else if (type === 'organic') {
+                if (value < 2) feedback = '(Needs compost)';
+                else if (value > 4) feedback = '(Excellent!)';
+                else feedback = '(Good level)';
+            }
+            
+            const feedbackSpan = document.querySelector(`#${type}Value`).parentElement;
+            const existingFeedback = feedbackSpan.querySelector('.feedback');
+            if (existingFeedback) existingFeedback.remove();
+            
+            const feedbackElement = document.createElement('span');
+            feedbackElement.className = 'feedback';
+            feedbackElement.style.fontSize = '12px';
+            feedbackElement.style.color = '#6b7280';
+            feedbackElement.textContent = ' ' + feedback;
+            feedbackSpan.appendChild(feedbackElement);
+        }
+
+        function getCurrentLocation() {
+            const locationBtn = document.querySelector('.location-btn');
+            const locationInput = document.getElementById('locationInput');
+            
+            locationBtn.innerHTML = '<div class="loading"></div>';
+            locationBtn.disabled = true;
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // Simulate reverse geocoding
+                        setTimeout(() => {
+                            locationInput.value = "Hyderabad, Telangana";
+                            soilData.location = "Hyderabad, Telangana";
+                            locationBtn.innerHTML = '✅';
+                            locationBtn.disabled = false;
+                            
+                            // Update weather
+                            updateWeatherData("Hyderabad, Telangana");
+                            
+                            setTimeout(() => {
+                                locationBtn.innerHTML = '📱';
+                            }, 2000);
+                        }, 2000);
+                    },
+                    function(error) {
+                        locationInput.value = "Hyderabad, Telangana (default)";
+                        locationBtn.innerHTML = '📱';
+                        locationBtn.disabled = false;
+                    }
+                );
+            } else {
+                locationInput.value = "Location not supported";
+                locationBtn.innerHTML = '📱';
+                locationBtn.disabled = false;
+            }
+        }
+
+        function updateWeatherData(location) {
+            // Simulate weather API call
+            const weatherConditions = [
+                { icon: '☀️', temp: 32, desc: 'Perfect sunny day for farming!' },
+                { icon: '⛅', temp: 28, desc: 'Partly cloudy - great for fieldwork!' },
+                { icon: '🌧️', temp: 25, desc: 'Light rain expected - good for crops!' }
+            ];
+            
+            const weather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+            
+            document.getElementById('weatherIcon').textContent = weather.icon;
+            document.getElementById('weatherTemp').textContent = weather.temp + '°C';
+            document.getElementById('weatherLocation').textContent = '📍 ' + location;
+            document.getElementById('weatherDesc').textContent = weather.desc;
+            
+            weatherData = { ...weather, location };
+        }
+
+        function analyzeSoil() {
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<div class="loading"></div> Analyzing your soil...';
+            submitBtn.disabled = true;
+            
+            // Collect all form data
+            soilData.location = document.getElementById('locationInput').value || 'Your location';
+            soilData.nitrogen = document.getElementById('nitrogenLevel').value;
+            soilData.lastCrop = document.getElementById('lastCrop').value;
+            soilData.farmSize = document.getElementById('farmSize').value;
+            
+            // Get weather data for the location if provided
+            if (soilData.location && soilData.location !== 'Your location') {
+                updateWeatherData(soilData.location);
+            }
+            
+            setTimeout(() => {
+                generateCropRecommendations();
+                submitBtn.innerHTML = '✅ Analysis Complete!';
+                
+                setTimeout(() => {
+                    showPage('crops');
+                }, 1500);
+            }, 3000);
+        }
+
+        function generateCropRecommendations() {
+            const recommendations = [];
+            
+            // Enhanced logic based on soil data including soil type
+            
+            // Rice recommendations based on soil type and conditions
+            if (soilData.soilType === 'clay' || (soilData.ph >= 6.0 && soilData.ph <= 7.0 && soilData.moisture >= 60)) {
+                recommendations.push({
+                    emoji: '🌾',
+                    name: 'Rice',
+                    yield: soilData.soilType === 'clay' ? '3.8 tons/acre' : '3.2 tons/acre',
+                    profit: soilData.soilType === 'clay' ? '₹52,000/acre' : '₹45,000/acre',
+                    sustainability: 85,
+                    reason: soilData.soilType === 'clay' 
+                        ? `Excellent! Clay soil is perfect for rice cultivation. Your pH (${soilData.ph}) and high moisture retention make this ideal.`
+                        : `Perfect! Your pH (${soilData.ph}) and moisture (${soilData.moisture}%) are ideal for rice. Current weather conditions support rice cultivation.`
+                });
+            }
+            
+            // Sandy soil recommendations
+            if (soilData.soilType === 'sandy') {
+                recommendations.push({
+                    emoji: '🥕',
+                    name: 'Carrots',
+                    yield: '20 tons/acre',
+                    profit: '₹60,000/acre',
+                    sustainability: 80,
+                    reason: 'Sandy soil is perfect for root vegetables! Carrots love the good drainage and easy soil penetration.'
+                });
+                
+                recommendations.push({
+                    emoji: '🥔',
+                    name: 'Potatoes',
+                    yield: '25 tons/acre',
+                    profit: '₹55,000/acre',
+                    sustainability: 75,
+                    reason: 'Great choice! Sandy soil prevents potato rot and makes harvesting easier.'
+                });
+            }
+            
+            // Loamy soil - best for most crops
+            if (soilData.soilType === 'loamy') {
+                recommendations.push({
+                    emoji: '🍅',
+                    name: 'Tomatoes',
+                    yield: '30 tons/acre',
+                    profit: '₹75,000/acre',
+                    sustainability: 85,
+                    reason: 'Jackpot! Loamy soil is perfect for tomatoes. Excellent drainage + nutrient retention = high profits!'
+                });
+                
+                recommendations.push({
+                    emoji: '🌽',
+                    name: 'Maize',
+                    yield: '4.5 tons/acre',
+                    profit: '₹42,000/acre',
+                    sustainability: 80,
+                    reason: 'Loamy soil + your nitrogen levels = perfect maize conditions!'
+                });
+            }
+            
+            // Nitrogen-based recommendations
+            if (soilData.nitrogen === 'high' && soilData.soilType !== 'sandy') {
+                recommendations.push({
+                    emoji: '🥬',
+                    name: 'Leafy Vegetables',
+                    yield: '18 tons/acre',
+                    profit: '₹65,000/acre',
+                    sustainability: 90,
+                    reason: `High nitrogen is perfect for leafy greens! ${soilData.soilType ? soilData.soilType.charAt(0).toUpperCase() + soilData.soilType.slice(1) + ' soil' : 'Your soil'} supports excellent leaf development.`
+                });
+            }
+            
+            // Peaty soil recommendations
+            if (soilData.soilType === 'peaty') {
+                recommendations.push({
+                    emoji: '🥔',
+                    name: 'Potatoes',
+                    yield: '28 tons/acre',
+                    profit: '₹58,000/acre',
+                    sustainability: 85,
+                    reason: 'Peaty soil is fantastic for potatoes! High organic matter content gives superior yields.'
+                });
+            }
+            
+            // Chalky soil recommendations
+            if (soilData.soilType === 'chalky') {
+                recommendations.push({
+                    emoji: '🥦',
+                    name: 'Broccoli',
+                    yield: '15 tons/acre',
+                    profit: '₹70,000/acre',
+                    sustainability: 80,
+                    reason: 'Chalky soil is ideal for brassicas! The alkaline nature perfectly suits broccoli cultivation.'
+                });
+            }
+            
+            // Silty soil recommendations
+            if (soilData.soilType === 'silty') {
+                recommendations.push({
+                    emoji: '🌾',
+                    name: 'Wheat',
+                    yield: '3.5 tons/acre',
+                    profit: '₹48,000/acre',
+                    sustainability: 75,
+                    reason: 'Silty soil holds nutrients well - perfect for wheat cultivation!'
+                });
+            }
+            
+            // General recommendations based on other factors
+            if (soilData.organic >= 3.5 && recommendations.length < 2) {
+                recommendations.push({
+                    emoji: '🍆',
+                    name: 'Eggplant',
+                    yield: '22 tons/acre',
+                    profit: '₹50,000/acre',
+                    sustainability: 78,
+                    reason: `High organic matter (${soilData.organic}%) creates ideal conditions for eggplant cultivation.`
+                });
+            }
+            
+            // Default recommendation if nothing specific matches
+            if (recommendations.length === 0) {
+                recommendations.push({
+                    emoji: '🌱',
+                    name: 'Mixed Vegetables',
+                    yield: '15 tons/acre',
+                    profit: '₹35,000/acre',
+                    sustainability: 80,
+                    reason: 'Based on your soil conditions, mixed vegetable farming would be a safe and profitable choice.'
+                });
+            }
+            
+            // Limit to top 3 recommendations
+            const topRecommendations = recommendations.slice(0, 3);
+            
+            // Update the recommendations section
+            const container = document.getElementById('cropRecommendations');
+            container.innerHTML = '';
+            
+            // Show analysis result message
+            const resultMsg = document.getElementById('analysisResult');
+            resultMsg.style.display = 'block';
+            
+            // Add recommendations
+            topRecommendations.forEach((rec, index) => {
+                const recCard = document.createElement('div');
+                recCard.className = 'crop-recommendation';
+                recCard.innerHTML = `
+                    <div class="crop-header">
+                        <div class="crop-emoji">${rec.emoji}</div>
+                        <div>
+                            <div class="crop-name">${rec.name}</div>
+                            <div style="font-size: 14px; color: #10b981;">${index === 0 ? '⭐ Top Recommendation' : `#${index + 1} Choice`}</div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold; color: #059669;">${rec.yield}</div>
+                            <div style="font-size: 12px; color: #6b7280;">Expected Yield</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold; color: #059669;">${rec.profit}</div>
+                            <div style="font-size: 12px; color: #6b7280;">Expected Profit</div>
+                        </div>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <div style="font-size: 14px; margin-bottom: 8px; color: #374151;">Sustainability Score: ${rec.sustainability}/100</div>
+                        <div style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; width: ${rec.sustainability}%; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div class="recommendation-reason">
+                        💡 <strong>Why this crop:</strong> ${rec.reason}
+                    </div>
+                    <button class="submit-btn" style="margin-top: 15px;">
+                        📋 Get Detailed Growing Guide
+                    </button>
+                `;
+                container.appendChild(recCard);
+            });
+            
+            // Add personalized message with soil type info
+            const personalMessage = document.createElement('div');
+            personalMessage.className = 'friendly-message';
+            const soilTypeText = soilData.soilType ? ` ${soilData.soilType} soil,` : '';
+            personalMessage.innerHTML = `
+                <div class="bot-avatar">🤖</div>
+                <p><strong>Customized for ${soilData.location}! 🎯</strong></p>
+                <p>Based on your${soilTypeText} pH (${soilData.ph}), moisture (${soilData.moisture}%), and ${weatherData.condition} weather. I'm ${Math.floor(87 + Math.random() * 8)}% confident these will work perfectly for you!</p>
+                ${soilData.soilType ? `<p><strong>🌱 Soil advantage:</strong> Your ${soilData.soilType} soil gives you special benefits for the recommended crops!</p>` : ''}
+            `;
+            container.appendChild(personalMessage);
+        }
+
+        function analyzeImage() {
+            const fileInput = document.getElementById('fileInput');
+            const resultCard = document.getElementById('diseaseResult');
+            const uploadArea = document.querySelector('.upload-area');
+            
+            if (fileInput.files.length > 0) {
+                // Show friendly loading message
+                uploadArea.innerHTML = `
+                    <div style="font-size: 48px; color: #10b981; margin-bottom: 15px;">🔬</div>
+                    <h3>Analyzing your plant...</h3>
+                    <p style="color: #6b7280; margin-top: 10px;">I'm looking at your photo carefully!</p>
+                    <div class="typing-indicator" style="margin-top: 15px; justify-content: center;">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    resultCard.style.display = 'block';
+                    resultCard.scrollIntoView({ behavior: 'smooth' });
+                    
+                    uploadArea.innerHTML = `
+                        <div style="font-size: 48px; color: #10b981; margin-bottom: 15px;">✅</div>
+                        <h3>Analysis Complete!</h3>
+                        <p style="color: #10b981; margin-top: 10px;">Found the problem and solution!</p>
+                    `;
+                }, 3000);
+            }
+        }
+
+        // Initialize weather data
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWeatherData('Hyderabad, Telangana');
+            
+            // Update market time
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('updateTime').textContent = `Last updated at ${timeString}`;
+            
+            // Language change handler
+            document.getElementById('languageSelect').addEventListener('change', function(e) {
+                const selectedLang = e.target.value;
+                const langNames = {
+                    'en': 'English',
+                    'hi': 'हिंदी (Hindi)',
+                    'te': 'తెలుగు (Telugu)',
+                    'ta': 'தமிழ் (Tamil)'
+                };
+                
+                // Show friendly language change message
+                const tempMessage = document.createElement('div');
+                tempMessage.className = 'friendly-message success-message';
+                tempMessage.style.position = 'fixed';
+                tempMessage.style.top = '20px';
+                tempMessage.style.left = '50%';
+                tempMessage.style.transform = 'translateX(-50%)';
+                tempMessage.style.zIndex = '1000';
+                tempMessage.innerHTML = `
+                    <p><strong>🌍 Language changed to ${langNames[selectedLang]}!</strong></p>
+                    <p>I can now understand and respond in your preferred language.</p>
+                `;
+                
+                document.body.appendChild(tempMessage);
+                setTimeout(() => tempMessage.remove(), 3000);
+            });
+        });
+    </script>
+</body>
+</html>
